@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Time-Series Forecasting Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712; /* gray-950 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .glass-panel {
+            background-color: rgba(17, 24, 39, 0.6); /* gray-900 with opacity */
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(55, 65, 81, 0.4); /* gray-700 with opacity */
+        }
+        textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; } /* gray-800 */
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; } /* gray-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; } /* gray-500 */
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen flex flex-col p-4 md:p-6 lg:p-8">
+        
+        <header class="mb-6">
+            <h1 class="text-2xl lg:text-3xl font-bold text-white">Advanced Forecasting Dashboard</h1>
+            <p class="text-sm lg:text-base text-gray-400">Project future trends using robust statistical and regression models.</p>
+        </header>
+
+        <div class="flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- Left Panel: Controls -->
+            <div class="lg:col-span-1 flex flex-col space-y-6">
+                
+                <div class="glass-panel rounded-xl p-5 flex-grow flex flex-col">
+                    <h2 class="text-lg font-semibold text-white mb-3 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h.01a1 1 0 100-2H10zm3 0a1 1 0 000 2h.01a1 1 0 100-2H13zM7 12a1 1 0 100-2h.01a1 1 0 100 2H7zm3 0a1 1 0 100-2h.01a1 1 0 100 2H10zm3 0a1 1 0 100-2h.01a1 1 0 100 2H13z" clip-rule="evenodd" /></svg>Data Source</h2>
+                    <p class="text-xs text-gray-400 mb-2">Enter comma-separated numbers or load a sample set.</p>
+                     <div class="flex space-x-2 mb-3">
+                        <button id="load-sample1" class="flex-1 text-xs bg-gray-700 hover:bg-gray-600 rounded-md py-1 transition-colors">Sample: Financial</button>
+                        <button id="load-sample2" class="flex-1 text-xs bg-gray-700 hover:bg-gray-600 rounded-md py-1 transition-colors">Sample: Web Traffic</button>
+                    </div>
+                    <textarea id="data-input" class="w-full flex-grow bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-gray-200 transition-all text-sm" placeholder="e.g., 110, 125, 143..."></textarea>
+                </div>
+
+                <div class="glass-panel rounded-xl p-5">
+                    <h2 class="text-lg font-semibold text-white mb-3 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>Forecasting Model</h2>
+                    <select id="model-select" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white transition-all">
+                        <option value="linear_regression">Linear Regression</option>
+                        <option value="polynomial_regression">Polynomial Regression (2nd order)</option>
+                        <option value="moving_average">Moving Average (5-period)</option>
+                        <option value="exponential_smoothing">Exponential Smoothing (Holt)</option>
+                    </select>
+                </div>
+                
+                <button id="run-forecast-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 text-lg shadow-[0_4px_15px_rgba(59,130,246,0.5)] hover:shadow-[0_4px_20px_rgba(59,130,246,0.7)]">
+                    Generate Forecast
+                </button>
+            </div>
+
+            <!-- Right Panels -->
+            <div class="lg:col-span-3 flex flex-col space-y-6">
+                <div class="glass-panel rounded-xl p-5 flex flex-col flex-grow">
+                    <h2 id="chart-title" class="text-lg font-semibold text-white mb-4">Forecast Visualization</h2>
+                    <div class="flex-grow relative min-h-[300px] lg:min-h-0">
+                        <canvas id="forecast-chart"></canvas>
+                        <div id="chart-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-500"><p>Load data & run a forecast to display the chart.</p></div>
+                    </div>
+                </div>
+                 <div id="insights-panel" class="glass-panel rounded-xl p-5 hidden">
+                    <h2 class="text-lg font-semibold text-white mb-3">Model Insights</h2>
+                    <div id="insights-content" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const dataInput = document.getElementById('data-input');
+        const modelSelect = document.getElementById('model-select');
+        const runBtn = document.getElementById('run-forecast-btn');
+        const chartTitle = document.getElementById('chart-title');
+        const chartPlaceholder = document.getElementById('chart-placeholder');
+        const insightsPanel = document.getElementById('insights-panel');
+        const insightsContent = document.getElementById('insights-content');
+        const ctx = document.getElementById('forecast-chart').getContext('2d');
+        let forecastChart;
+
+        const sampleData = {
+            financial: "110.5, 112.1, 115.3, 118.2, 122.7, 125.4, 129.9, 133.6, 138.0, 142.3, 145.1, 149.8, 153.2, 158.7, 161.4, 165.9, 169.2, 174.5, 179.8, 185.1, 188.3, 192.7, 195.4, 201.2, 198.5, 205.6, 210.1, 215.7, 212.3, 218.9",
+            webTraffic: "1500, 1550, 1620, 1700,  1680, 1800, 1900, 1950, 2000, 2100, 2050, 2200, 2300, 2250, 2400, 2550, 2600, 2500, 2700, 2850, 2900, 3000, 2950, 3100"
+        };
+        
+        // --- FORECASTING MODELS ---
+
+        // Helper function to solve a system of linear equations using Gaussian elimination
+        function solveLinearSystem(A, B) {
+            const n = A.length;
+            for (let i = 0; i < n; i++) {
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) {
+                        maxRow = k;
+                    }
+                }
+                [A[i], A[maxRow]] = [A[maxRow], A[i]];
+                [B[i], B[maxRow]] = [B[maxRow], B[i]];
+
+                for (let k = i + 1; k < n; k++) {
+                    const factor = A[k][i] / A[i][i];
+                    if (isFinite(factor)) {
+                        B[k] -= factor * B[i];
+                        for (let j = i; j < n; j++) {
+                            A[k][j] -= factor * A[i][j];
+                        }
+                    }
+                }
+            }
+            const x = new Array(n);
+            for (let i = n - 1; i >= 0; i--) {
+                let sum = 0;
+                for (let j = i + 1; j < n; j++) {
+                    sum += A[i][j] * x[j];
+                }
+                x[i] = (B[i] - sum) / A[i][i];
+            }
+            return x;
+        }
+
+        // Polynomial Regression function
+        function polynomialRegression(data, order) {
+            const n = data.length;
+            const A = Array(order + 1).fill(0).map(() => Array(order + 1).fill(0));
+            const B = Array(order + 1).fill(0);
+
+            for (let i = 0; i < n; i++) {
+                const x = data[i][0];
+                const y = data[i][1];
+                for (let j = 0; j <= order; j++) {
+                    B[j] += y * Math.pow(x, j);
+                    for (let k = 0; k <= order; k++) {
+                        A[j][k] += Math.pow(x, j + k);
+                    }
+                }
+            }
+            const coeffs = solveLinearSystem(A, B);
+            return (x) => {
+                let result = 0;
+                for (let i = 0; i < coeffs.length; i++) {
+                    result += coeffs[i] * Math.pow(x, i);
+                }
+                return result;
+            };
+        }
+        
+        // Moving Average function
+        function movingAverage(data, period) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    result.push(null);
+                } else {
+                    const window = data.slice(i - period + 1, i + 1);
+                    const average = window.reduce((sum, val) => sum + val, 0) / period;
+                    result.push(average);
+                }
+            }
+            return result;
+        }
+
+        // Double Exponential Smoothing (Holt's Method)
+        function doubleExponentialSmoothing(data, alpha, beta) {
+            let level = data[0];
+            let trend = data[1] - data[0];
+            const smoothed = [];
+            for (let i = 0; i < data.length; i++) {
+                const value = data[i];
+                const lastLevel = level;
+                level = alpha * value + (1 - alpha) * (level + trend);
+                trend = beta * (level - lastLevel) + (1 - beta) * trend;
+                smoothed.push(level + trend);
+            }
+            return { smoothed, finalLevel: level, finalTrend: trend };
+        }
+
+        // --- CHART & UI LOGIC ---
+
+        function createChart(chartData) {
+            if (forecastChart) forecastChart.destroy();
+            chartPlaceholder.style.display = 'none';
+
+            forecastChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        { label: 'Historical Data', data: chartData.historical, borderColor: 'rgb(59, 130, 246)', borderWidth: 2, pointBackgroundColor: 'rgb(59, 130, 246)', fill: false, tension: 0.1 },
+                        { label: 'Model Trend', data: chartData.trend, borderColor: 'rgb(234, 179, 8)', borderWidth: 3, pointRadius: 0, fill: false, tension: 0.2 },
+                        { label: 'Forecast', data: chartData.forecast, borderColor: 'rgb(236, 72, 153)', borderDash: [5, 5], borderWidth: 3, pointBackgroundColor: 'rgb(236, 72, 153)', pointRadius: 4, fill: false, tension: 0.1 },
+                        { label: 'Confidence Interval', data: chartData.confidence, borderColor: 'rgba(236, 72, 153, 0.2)', borderWidth: 1, pointRadius: 0, fill: '+1', backgroundColor: 'rgba(236, 72, 153, 0.1)' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#1f2937' } },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af', font: { family: "'Roboto Mono', monospace" } }, grid: { color: 'rgba(55, 65, 81, 0.5)' } },
+                        y: { beginAtZero: false, ticks: { color: '#9ca3af', font: { family: "'Roboto Mono', monospace" } }, grid: { color: 'rgba(55, 65, 81, 0.5)' } }
+                    }
+                }
+            });
+        }
+        
+        function displayInsights(insights) {
+            insightsPanel.classList.remove('hidden');
+            insightsContent.innerHTML = `
+                <div class="p-2"><p class="text-sm text-gray-400">Trend</p><p class="text-xl font-bold ${insights.trendColor}">${insights.trend}</p></div>
+                <div class="p-2"><p class="text-sm text-gray-400">Volatility</p><p class="text-xl font-bold">${insights.volatility}</p></div>
+                <div class="p-2"><p class="text-sm text-gray-400">Confidence</p><p class="text-xl font-bold ${insights.confidenceColor}">${insights.confidence}</p></div>
+                <div class="p-2"><p class="text-sm text-gray-400">Summary</p><p class="text-xl font-bold">${insights.summary}</p></div>
+            `;
+        }
+
+        // --- MAIN APPLICATION LOGIC ---
+
+        function runForecast() {
+            const rawData = dataInput.value.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+            if (rawData.length < 10) {
+                alert("Please enter at least 10 valid data points for accurate forecasting.");
+                return;
+            }
+
+            const modelType = modelSelect.value;
+            const n = rawData.length;
+            const forecastLength = Math.max(5, Math.floor(n * 0.3));
+            const labels = Array.from({ length: n + forecastLength }, (_, i) => `P${i + 1}`);
+
+            let trendData = [], forecastPoints = [], confidence = {};
+            const historicalForChart = [...rawData, ...Array(forecastLength).fill(null)];
+
+            switch (modelType) {
+                case 'linear_regression':
+                    chartTitle.textContent = "Forecast: Linear Regression";
+                    const lrData = rawData.map((d, i) => [i, d]);
+                    const { m, b } = ss.linearRegression(lrData);
+                    const lrLine = ss.linearRegressionLine({ m, b });
+                    trendData = rawData.map((_, i) => lrLine(i));
+                    for (let i = 0; i < forecastLength; i++) forecastPoints.push(lrLine(n + i));
+                    break;
+
+                case 'polynomial_regression':
+                    chartTitle.textContent = "Forecast: Polynomial Regression";
+                    const polyData = rawData.map((d, i) => [i, d]);
+                    const polyReg = polynomialRegression(polyData, 2); // 2nd order
+                    trendData = rawData.map((_, i) => polyReg(i));
+                    for (let i = 0; i < forecastLength; i++) forecastPoints.push(polyReg(n + i));
+                    break;
+                
+                case 'moving_average':
+                    chartTitle.textContent = "Forecast: Moving Average (5-Period)";
+                    trendData = movingAverage(rawData, 5);
+                    const lastAvg = trendData[n - 1];
+                    if(lastAvg) forecastPoints = Array(forecastLength).fill(lastAvg);
+                    break;
+
+                case 'exponential_smoothing':
+                    chartTitle.textContent = "Forecast: Double Exponential Smoothing (Holt)";
+                    const { smoothed, finalLevel, finalTrend } = doubleExponentialSmoothing(rawData, 0.5, 0.5); // Alpha & Beta set to 0.5
+                    trendData = smoothed;
+                    for (let i = 1; i <= forecastLength; i++) forecastPoints.push(finalLevel + i * finalTrend);
+                    break;
+            }
+            
+            // Calculate standard deviation for confidence interval
+            const stdDev = ss.standardDeviation(rawData);
+            const confidenceMargin = stdDev * 1.96 / Math.sqrt(n); // 95% confidence
+            
+            const forecastForChart = [...Array(n).fill(null), ...forecastPoints];
+            forecastForChart[n-1] = rawData[n-1];
+            
+            const confidenceUpper = forecastForChart.map(p => p !== null ? p + confidenceMargin : null);
+            const confidenceLower = forecastForChart.map(p => p !== null ? p - confidenceMargin : null);
+
+            createChart({
+                labels,
+                historical: historicalForChart,
+                trend: [...trendData, ...Array(forecastLength).fill(null)],
+                forecast: forecastForChart,
+                confidence: { upper: confidenceUpper, lower: confidenceLower }
+            });
+            
+            // Generate and display insights
+            const lastHistorical = rawData[n-1];
+            const lastForecast = forecastPoints[forecastLength-1];
+            const trendDirection = lastForecast > lastHistorical ? "Upward" : "Downward";
+            const volatilityValue = stdDev / ss.mean(rawData);
+            
+            displayInsights({
+                trend: trendDirection,
+                trendColor: trendDirection === 'Upward' ? 'text-green-400' : 'text-red-400',
+                volatility: volatilityValue < 0.1 ? 'Low' : volatilityValue < 0.3 ? 'Moderate' : 'High',
+                confidence: volatilityValue > 0.3 ? 'Low' : modelType === 'moving_average' ? 'Medium' : 'High',
+                confidenceColor: (volatilityValue > 0.3 || modelType === 'moving_average') ? 'text-yellow-400' : 'text-green-400',
+                summary: `${(lastForecast).toFixed(2)}`
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        runBtn.addEventListener('click', runForecast);
+        document.getElementById('load-sample1').addEventListener('click', () => {
+            dataInput.value = sampleData.financial;
+            runForecast();
+        });
+        document.getElementById('load-sample2').addEventListener('click', () => {
+            dataInput.value = sampleData.webTraffic;
+            runForecast();
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             dataInput.value = sampleData.financial;
+             runForecast();
+        });
+
+    </script>
+</body>
+</html>
