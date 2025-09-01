@@ -2,7 +2,7 @@
 
 An interactive, web-based predictive analytics tool for visualizing time-series data and forecasting future trends using a variety of statistical models. This project is built with vanilla JavaScript and is fully self-contained in a single HTML file.
 
-[**➡️ View Live Demo**](https://www.google.com/search?q=https://github.com/Garud218/Visual-Data-Forecaster)
+[**➡️ View Live Demo**](https://www.google.com/url?sa=E&source=gmail&q=https://garud218.github.io/Visual-Data-Forecaster/)
 
 ## **Features**
 
