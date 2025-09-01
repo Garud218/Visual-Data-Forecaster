@@ -16,7 +16,7 @@ An interactive, web-based predictive analytics tool for visualizing time-series 
 
 ## **How to Use**
 
-1. **Open index.html** in any modern web browser or visit the [Live Demo](https://www.google.com/search?q=https://github.com/Garud218/Visual-Data-Forecaster) 
+1. **Open index.html** in any modern web browser or visit the [Live Demo](https://www.google.com/url?sa=E&source=gmail&q=https://garud218.github.io/Visual-Data-Forecaster/)
 2. **Load Data**:  
    * Click **"Sample: Financial"** or **"Sample: Web Traffic"** to load a pre-configured dataset.  
    * Alternatively, paste your own comma-separated numerical data into the text area.  
@@ -37,13 +37,3 @@ An interactive, web-based predictive analytics tool for visualizing time-series 
 * **Vanilla JavaScript** for all application logic and DOM manipulation.  
 * **Chart.js** for creating beautiful and interactive charts.  
 * **simple-statistics** for foundational statistical calculations like linear regression and standard deviation.
-
-## **Deployment**
-
-This project can be easily deployed for free using **GitHub Pages**:
-
-1. Create a new public repository on GitHub.  
-2. Upload the index.html file to the repository.  
-3. In the repository settings, go to the "Pages" section.  
-4. Select the main branch as the source and click "Save".  
-5. Your forecasting dashboard will be live at https://\<your-username\>.github.io/\<your-repo-name\>/.
