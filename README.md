@@ -4,6 +4,8 @@ An interactive, web-based predictive analytics tool for visualizing time-series 
 
 [**➡️ View Live Demo**](https://garud218.github.io/Visual-Data-Forecaster/)
 
+[![Data Forecasting Dashboard Preview](https://raw.githubusercontent.com/Garud218/Visual-Data-Forecaster/main/Screenshot-Dashboard.png)](https://garud218.github.io/Visual-Data-Forecaster/)
+
 ## **Features**
 
 * **Multiple Forecasting Models**: Choose from four distinct statistical and regression models to best fit your data.  
